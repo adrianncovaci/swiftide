@@ -9137,6 +9137,7 @@ dependencies = [
  "test-log",
  "testcontainers",
  "tokio",
+ "uuid",
  "wiremock",
 ]
 
@@ -9246,6 +9247,7 @@ dependencies = [
  "tokio",
  "tokio-stream",
  "tracing",
+ "uuid",
 ]
 
 [[package]]
