@@ -65,7 +65,7 @@ pub struct Node {
     pub offset: usize,
     /// Optional parent id
     #[builder(default)]
-    pub origin_id: Option<uuid::Uuid>,
+    pub parent_id: Option<uuid::Uuid>,
 }
 
 impl NodeBuilder {
@@ -82,11 +82,6 @@ impl NodeBuilder {
         vectors: Option<HashMap<EmbeddedField, Embedding>>,
     ) -> &mut Self {
         self.vectors = Some(vectors);
-        self
-    }
-
-    pub fn maybe_origin_id(&mut self, origin_id: Option<uuid::Uuid>) -> &mut Self {
-        self.origin_id = Some(origin_id);
         self
     }
 }
@@ -134,7 +129,7 @@ impl Debug for Node {
 impl Node {
     /// Builds a new instance of `Node`, returning a `NodeBuilder`. Copies
     /// over the fields from the provided `Node`.
-    pub fn build_from_other(node: &Node) -> NodeBuilder {
+    pub fn chunking_from(node: &Node) -> NodeBuilder {
         NodeBuilder::default()
             .path(node.path.clone())
             .chunk(node.chunk.clone())
@@ -144,7 +139,7 @@ impl Node {
             .embed_mode(node.embed_mode)
             .original_size(node.original_size)
             .offset(node.offset)
-            .maybe_origin_id(node.origin_id)
+            .parent_id(node.id())
             .to_owned()
     }
 
@@ -251,8 +246,8 @@ impl Node {
         uuid::Uuid::new_v3(&uuid::Uuid::NAMESPACE_OID, &bytes)
     }
 
-    pub fn origin_id(&self) -> Option<uuid::Uuid> {
-        self.origin_id
+    pub fn parent_id(&self) -> Option<uuid::Uuid> {
+        self.parent_id
     }
 }
 
@@ -352,7 +347,7 @@ mod tests {
             .with_sparse_vectors(HashMap::new())
             .to_owned();
 
-        let builder = Node::build_from_other(&original_node);
+        let builder = Node::chunking_from(&original_node);
         let new_node = builder.build().unwrap();
 
         assert_eq!(original_node, new_node);
@@ -378,7 +373,7 @@ mod tests {
             .with_sparse_vectors(sparse_vectors.clone())
             .to_owned();
 
-        let builder = Node::build_from_other(&original_node);
+        let builder = Node::chunking_from(&original_node);
         let new_node = builder.build().unwrap();
 
         assert_eq!(original_node, new_node);

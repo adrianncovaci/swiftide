@@ -115,10 +115,10 @@ impl ChunkerTransformer for ChunkCode {
             IndexingStream::iter(split.into_iter().map(move |chunk| {
                 let chunk_size = chunk.len();
 
-                let node = Node::build_from_other(&node)
+                let node = Node::chunking_from(&node)
                     .chunk(chunk)
                     .offset(offset)
-                    .origin_id(node.id())
+                    .parent_id(node.id())
                     .build();
 
                 offset += chunk_size;

@@ -46,9 +46,9 @@ impl Transformer for HtmlToMarkdownTransformer {
     async fn transform_node(&self, node: Node) -> Result<Node> {
         let chunk = self.htmd.convert(&node.chunk)?;
 
-        Node::build_from_other(&node)
+        Node::chunking_from(&node)
             .chunk(chunk)
-            .origin_id(node.id())
+            .parent_id(node.id())
             .build()
     }
 

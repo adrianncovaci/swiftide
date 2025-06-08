@@ -129,9 +129,9 @@ impl ChunkerTransformer for ChunkMarkdown {
             .collect::<Vec<String>>();
 
         IndexingStream::iter(chunks.into_iter().map(move |chunk| {
-            Node::build_from_other(&node)
+            Node::chunking_from(&node)
                 .chunk(chunk)
-                .origin_id(node.id())
+                .parent_id(node.id())
                 .build()
         }))
     }

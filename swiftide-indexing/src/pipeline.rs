@@ -181,15 +181,15 @@ impl Pipeline {
 
         let cache_for_task = Arc::clone(&cache);
 
-        tokio::spawn(async move {
+        self.cache_handle = Some(tokio::spawn(async move {
             while let Some(cache_key) = cache_receiver.recv().await {
                 let cache_node = Node {
-                    origin_id: Some(cache_key),
+                    parent_id: Some(cache_key),
                     ..Default::default()
                 };
                 cache_for_task.set(&cache_node).await;
             }
-        });
+        }));
 
         self.stream = self
             .stream
@@ -623,7 +623,7 @@ impl Pipeline {
         let mut cache_keys = HashSet::new();
 
         while let Some(node) = self.stream.try_next().await? {
-            cache_keys.insert(node.origin_id().unwrap_or(node.id()));
+            cache_keys.insert(node.parent_id().unwrap_or(node.id()));
         }
 
         let elapsed_in_seconds = now.elapsed().as_secs();
